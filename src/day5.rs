@@ -1,6 +1,4 @@
-use std::borrow::BorrowMut;
-
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub struct Container(char);
 
 impl Container {
@@ -34,10 +32,10 @@ impl Operation {
                 count = c.unwrap() as usize;
                 got_values = 1;
             } else if got_values == 1 {
-                from = c.unwrap() as usize;
+                from = c.unwrap() as usize - 1;
                 got_values = 2;
             } else {
-                to = c.unwrap() as usize;
+                to = c.unwrap() as usize - 1;
             }
         }
 
@@ -53,8 +51,7 @@ impl Operation {
 pub fn input_generator(input: &str) -> (Vec<Vec<Container>>, Vec<Operation>) {
     let mut field_result: Vec<Vec<Container>> = Vec::new();
     let mut operations: Vec<Operation> = Vec::new();
-
-    let (field, operations_data) = input.split_once("\n\n").unwrap();
+    let (field, operations_data) = input.split_once("\n\r\n").unwrap();
     let mut field_lines = field.lines().collect::<Vec<&str>>();
     let last_str = field_lines.last().unwrap().trim();
     field_lines.reverse();
@@ -81,10 +78,22 @@ pub fn input_generator(input: &str) -> (Vec<Vec<Container>>, Vec<Operation>) {
 }
 
 #[aoc(day5, part1)]
-pub fn part1(input: &(Vec<Vec<Container>>, Vec<Operation>)) -> &'static str {
-    let mut field = input.0.borrow_mut::<Vec<VeC<Container>>();
-    for operation in input.1 {}
-    ""
+pub fn part1(input: &(Vec<Vec<Container>>, Vec<Operation>)) -> String {
+    let field = &mut input.0.clone();
+    let operations = &input.1;
+
+    for op in operations {
+        for _ in 0..op.count {
+            dbg!(&field);
+            let con = &field.get_mut(op.from).unwrap().pop().unwrap();
+            field.get_mut(op.to).unwrap().push(*con);
+        }
+    }
+    let mut result = String::new();
+    for column in field {
+        result.push(column.last().unwrap().0);
+    }
+    return result;
 }
 
 #[aoc(day5, part2)]
@@ -101,9 +110,7 @@ mod test {
         let input = "    [D]    
 [N] [C]    
 [Z] [M] [P]
-1   2   3 
-
-move 1 from 2 to 1
+1   2   3 \n\r\nmove 1 from 2 to 1
 move 3 from 1 to 3
 move 2 from 2 to 1
 move 1 from 1 to 2";
