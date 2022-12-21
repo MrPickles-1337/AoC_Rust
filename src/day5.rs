@@ -97,7 +97,7 @@ pub fn part1(input: &(Vec<Vec<Container>>, Vec<Operation>)) -> String {
 }
 
 #[aoc(day5, part2)]
-pub fn part2(input: &(Vec<Vec<Container>>, Vec<Operation>)) -> &'static str {
+pub fn part2(_input: &(Vec<Vec<Container>>, Vec<Operation>)) -> &'static str {
     ""
 }
 
