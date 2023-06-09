@@ -8,13 +8,12 @@ pub fn input_generatr(input: &str) -> Vec<Instruction> {
     input
         .lines()
         .map(|line| {
-            let spl = line.split(" ").collect::<Vec<&str>>();
-            let instr = match spl.first().unwrap() {
-                &"addx" => Instruction::Addx(str::parse::<isize>(spl.last().unwrap()).unwrap()),
-                &"noop" => Instruction::Noop,
+            let spl = line.split(' ').collect::<Vec<&str>>();
+            match *spl.first().unwrap() {
+                "addx" => Instruction::Addx(str::parse::<isize>(spl.last().unwrap()).unwrap()),
+                "noop" => Instruction::Noop,
                 _ => unreachable!(),
-            };
-            return instr;
+            }
         })
         .collect::<Vec<Instruction>>()
 }
@@ -48,18 +47,18 @@ pub fn part1(input: &Vec<Instruction>) -> isize {
             }
         }
     }
-    return res;
+    res
 }
 
 pub fn part2(input: &Vec<Instruction>) -> usize {
-    let mut screen = vec![false; 6*40];
+    let mut screen = vec![false; 6 * 40];
     let mut position = 0;
 
     for instr in input {
         match instr {
             Instruction::Addx(n) => {
                 todo!();
-            },
+            }
             Instruction::Noop => todo!(),
         }
     }

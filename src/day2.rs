@@ -15,7 +15,7 @@ pub fn input_generator(input: &str) -> Vec<Round> {
     input
         .lines()
         .map(|line| {
-            let mut s = line.split(" ");
+            let mut s = line.split(' ');
             return Round {
                 others: match s.next().unwrap().chars().next().unwrap() {
                     'A' => Shape::Rock(1),
@@ -43,18 +43,18 @@ fn calculate_round_part1(round: &Round) -> usize {
     }
     match round.yours {
         Shape::Rock(n) => match round.others {
-            Shape::Paper(_) => return 0 + n,
-            Shape::Scissors(_) => return 6 + n,
+            Shape::Paper(_) => n,
+            Shape::Scissors(_) => 6 + n,
             Shape::Rock(_) => unreachable!(),
         },
         Shape::Paper(n) => match round.others {
-            Shape::Rock(_) => return 6 + n,
-            Shape::Scissors(_) => return 0 + n,
+            Shape::Rock(_) => 6 + n,
+            Shape::Scissors(_) => n,
             Shape::Paper(_) => unreachable!(),
         },
         Shape::Scissors(n) => match round.others {
-            Shape::Rock(_) => return 0 + n,
-            Shape::Paper(_) => return 6 + n,
+            Shape::Rock(_) => n,
+            Shape::Paper(_) => 6 + n,
             Shape::Scissors(_) => unreachable!(),
         },
     }
@@ -63,17 +63,17 @@ fn calculate_round_part1(round: &Round) -> usize {
 fn calculate_round_part2(round: &Round) -> usize {
     match round.others {
         Shape::Rock(_) => match round.yours {
-            Shape::Rock(_) => return 0 + 3,
-            Shape::Paper(_) => return 3 + 1,
-            Shape::Scissors(_) => return 6 + 2,
+            Shape::Rock(_) => 3,
+            Shape::Paper(_) => 3 + 1,
+            Shape::Scissors(_) => 6 + 2,
         },
         Shape::Paper(_) => match round.yours {
-            Shape::Rock(_) => return 0 + 1,
+            Shape::Rock(_) => 1,
             Shape::Paper(_) => 3 + 2,
             Shape::Scissors(_) => 6 + 3,
         },
         Shape::Scissors(_) => match round.yours {
-            Shape::Rock(_) => 0 + 2,
+            Shape::Rock(_) => 2,
             Shape::Paper(_) => 3 + 3,
             Shape::Scissors(_) => 6 + 1,
         },
@@ -81,13 +81,13 @@ fn calculate_round_part2(round: &Round) -> usize {
 }
 
 #[aoc(day2, part1)]
-pub fn part1(input: &Vec<Round>) -> usize {
-    input.iter().map(|round| calculate_round_part1(round)).sum()
+pub fn part1(input: &[Round]) -> usize {
+    input.iter().map(calculate_round_part1).sum()
 }
 
 #[aoc(day2, part2)]
-pub fn part2(input: &Vec<Round>) -> usize {
-    input.iter().map(|round| calculate_round_part2(round)).sum()
+pub fn part2(input: &[Round]) -> usize {
+    input.iter().map(calculate_round_part2).sum()
 }
 
 #[cfg(test)]
