@@ -3,15 +3,15 @@ pub fn part1(input: &str) -> usize {
     input
         .lines()
         .map(|line| {
-            let (a, b) = line.split_once(",").unwrap();
-            let (a1, a2) = a.split_once("-").unwrap();
-            let (b1, b2) = b.split_once("-").unwrap();
+            let (a, b) = line.split_once(',').unwrap();
+            let (a1, a2) = a.split_once('-').unwrap();
+            let (b1, b2) = b.split_once('-').unwrap();
             let a1 = str::parse::<usize>(a1).unwrap();
             let a2 = str::parse::<usize>(a2).unwrap();
             let b1 = str::parse::<usize>(b1).unwrap();
             let b2 = str::parse::<usize>(b2).unwrap();
 
-            return (a1 >= b1 && a2 <= b2) || (b1 >= a1 && b2 <= a2);
+            (a1 >= b1 && a2 <= b2) || (b1 >= a1 && b2 <= a2)
         })
         .fold(0, |a, v| if v { a + 1 } else { a })
 }
@@ -21,18 +21,18 @@ pub fn part2(input: &str) -> usize {
     input
         .lines()
         .map(|line| {
-            let (a, b) = line.split_once(",").unwrap();
-            let (a1, a2) = a.split_once("-").unwrap();
-            let (b1, b2) = b.split_once("-").unwrap();
+            let (a, b) = line.split_once(',').unwrap();
+            let (a1, a2) = a.split_once('-').unwrap();
+            let (b1, b2) = b.split_once('-').unwrap();
             let a1 = str::parse::<usize>(a1).unwrap();
             let a2 = str::parse::<usize>(a2).unwrap();
             let b1 = str::parse::<usize>(b1).unwrap();
             let b2 = str::parse::<usize>(b2).unwrap();
 
-            return (a1 >= b1 && a1 <= b2)
+            (a1 >= b1 && a1 <= b2)
                 || (b1 >= a1 && b1 <= a2)
                 || (a2 >= b1 && a2 <= b2)
-                || (b2 >= a1 && b2 <= a2);
+                || (b2 >= a1 && b2 <= a2)
         })
         .fold(0, |a, v| if v { a + 1 } else { a })
 }

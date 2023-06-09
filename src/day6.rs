@@ -5,8 +5,8 @@ pub fn part1(input: &str) -> usize {
     let chars = input.chars().collect::<Vec<char>>();
     for i in 0..chars.len() {
         let mut set = HashSet::new();
-        for j in i..i + 4 {
-            set.insert(chars[j]);
+        for j in chars.iter().skip(i).take(4) {
+            set.insert(j);
         }
         if set.len() == 4 {
             return i + 4;
@@ -20,8 +20,8 @@ pub fn part2(input: &str) -> usize {
     let chars = input.chars().collect::<Vec<char>>();
     for i in 0..chars.len() {
         let mut set = HashSet::new();
-        for j in i..i + 14 {
-            set.insert(chars[j]);
+        for j in chars.iter().skip(i).take(14) {
+            set.insert(j);
         }
         if set.len() == 14 {
             return i + 14;

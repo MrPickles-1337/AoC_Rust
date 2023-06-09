@@ -17,12 +17,11 @@ pub fn part1(input: &str) -> usize {
                 .collect::<HashSet<char>>()
                 .into_iter()
                 .map(|c| {
-                    let value = if c.is_ascii_lowercase() {
+                    if c.is_ascii_lowercase() {
                         c as u8 - START_LOWER
                     } else {
                         c as u8 - START_UPPER + 26
-                    };
-                    return value;
+                    }
                 })
                 .map(|c| c as usize);
         })
@@ -47,12 +46,11 @@ pub fn part2(input: &str) -> usize {
         })
         .map(|c| c.0)
         .map(|c| {
-            let value = if c.is_ascii_lowercase() {
+            (if c.is_ascii_lowercase() {
                 c as u8 - START_LOWER
             } else {
                 c as u8 - START_UPPER + 26
-            } as usize;
-            return value;
+            }) as usize
         })
         .sum::<usize>()
 }
