@@ -6,19 +6,19 @@ pub fn input_generator(input: &str) -> Vec<Vec<u32>> {
         .collect()
 }
 
-fn visible_from_top(field: &Vec<Vec<u32>>, x: usize, y: usize, height: &u32) -> bool {
+fn visible_from_top(field: &[Vec<u32>], x: usize, y: usize, height: &u32) -> bool {
     let mut result = true;
 
-    for i in 0..y {
-        if field[i][x] >= *height {
+    for i in field.iter().take(y) {
+        if i[x] >= *height {
             result = false;
         }
     }
 
-    return result;
+    result
 }
 
-fn visible_from_right(field: &Vec<Vec<u32>>, x: usize, y: usize, height: &u32) -> bool {
+fn visible_from_right(field: &[Vec<u32>], x: usize, y: usize, height: &u32) -> bool {
     let mut result = true;
 
     for i in x + 1..field[0].len() {
@@ -27,22 +27,22 @@ fn visible_from_right(field: &Vec<Vec<u32>>, x: usize, y: usize, height: &u32) -
         }
     }
 
-    return result;
+    result
 }
 
-fn visible_from_bottom(field: &Vec<Vec<u32>>, x: usize, y: usize, height: &u32) -> bool {
+fn visible_from_bottom(field: &[Vec<u32>], x: usize, y: usize, height: &u32) -> bool {
     let mut result = true;
 
-    for i in y + 1..field.len() {
-        if field[i][x] >= *height {
+    for i in field.iter().skip(y + 1) {
+        if i[x] >= *height {
             result = false;
         }
     }
 
-    return result;
+    result
 }
 
-fn visible_from_left(field: &Vec<Vec<u32>>, x: usize, y: usize, height: &u32) -> bool {
+fn visible_from_left(field: &[Vec<u32>], x: usize, y: usize, height: &u32) -> bool {
     let mut result = true;
 
     for i in 0..x {
@@ -51,7 +51,7 @@ fn visible_from_left(field: &Vec<Vec<u32>>, x: usize, y: usize, height: &u32) ->
         }
     }
 
-    return result;
+    result
 }
 
 #[aoc(day8, part1)]
@@ -70,10 +70,10 @@ pub fn part1(input: &Vec<Vec<u32>>) -> usize {
         }
     }
 
-    return visible;
+    visible
 }
 
-fn calculate_scenic_score(field: &Vec<Vec<u32>>, x: usize, y: usize) -> u32 {
+fn calculate_scenic_score(field: &[Vec<u32>], x: usize, y: usize) -> u32 {
     let height = field[y][x];
     let mut top = 0;
     for i in (0..y).rev() {
@@ -92,9 +92,9 @@ fn calculate_scenic_score(field: &Vec<Vec<u32>>, x: usize, y: usize) -> u32 {
     }
 
     let mut bottom = 0;
-    for i in y + 1..field.len() {
+    for i in field.iter().skip(y + 1) {
         bottom += 1;
-        if field[i][x] >= height {
+        if i[x] >= height {
             break;
         }
     }
@@ -107,7 +107,7 @@ fn calculate_scenic_score(field: &Vec<Vec<u32>>, x: usize, y: usize) -> u32 {
         }
     }
 
-    return left * right * top * bottom;
+    left * right * top * bottom
 }
 
 #[aoc(day8, part2)]

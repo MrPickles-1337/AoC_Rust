@@ -16,12 +16,12 @@ pub struct Operation {
 
 impl Operation {
     fn from(input: &str) -> Operation {
-        let spl: Vec<&str> = input.split(" ").collect();
+        let spl: Vec<&str> = input.split(' ').collect();
         let count = spl[1].parse().unwrap();
         let from = spl[3].parse().unwrap();
         let to = spl[5].parse().unwrap();
 
-        return Operation { count, from, to };
+        Operation { count, from, to }
     }
 }
 
@@ -37,7 +37,7 @@ pub fn input_generator(input: &str) -> (Vec<Vec<Container>>, Vec<Operation>) {
         let n: usize = str::parse::<usize>(column).unwrap() - 1;
         field_result.push(Vec::new());
         for line in field_lines.iter().skip(1) {
-            let stack = field_result.get_mut(n as usize).unwrap();
+            let stack = field_result.get_mut(n).unwrap();
 
             unsafe {
                 let block = line.get_unchecked(n * 4..n * 4 + 3);
@@ -52,7 +52,7 @@ pub fn input_generator(input: &str) -> (Vec<Vec<Container>>, Vec<Operation>) {
         operations.push(Operation::from(line));
     }
 
-    return (field_result, operations);
+    (field_result, operations)
 }
 
 #[aoc(day5, part1)]
@@ -70,7 +70,7 @@ pub fn part1(input: &(Vec<Vec<Container>>, Vec<Operation>)) -> String {
     for column in field {
         result.push(column.last().unwrap().0);
     }
-    return result;
+    result
 }
 
 #[aoc(day5, part2)]
@@ -79,7 +79,7 @@ pub fn part2(input: &(Vec<Vec<Container>>, Vec<Operation>)) -> String {
     let operations = &input.1;
 
     for op in operations {
-        let i = field.get(op.from -1).unwrap().len() - op.count;
+        let i = field.get(op.from - 1).unwrap().len() - op.count;
         let mut drain = field
             .get_mut(op.from - 1)
             .unwrap()
@@ -91,7 +91,7 @@ pub fn part2(input: &(Vec<Vec<Container>>, Vec<Operation>)) -> String {
     for column in field {
         result.push(column.last().unwrap().0);
     }
-    return result;
+    result
 }
 
 #[cfg(test)]
