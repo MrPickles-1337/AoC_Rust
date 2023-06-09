@@ -11,12 +11,12 @@ pub struct Dir {
 
 impl Dir {
     fn new(path: &str) -> Dir {
-        return Dir {
+        Dir {
             path: String::from(path),
             size: 0,
             dirs: Vec::new(),
             files: Vec::new(),
-        };
+        }
     }
 
     fn calc_self_size(&mut self) -> usize {
@@ -27,7 +27,7 @@ impl Dir {
         let sub_dirs_size: usize = self.dirs.iter_mut().map(|d| d.calc_self_size()).sum();
         self.size += sub_dirs_size;
 
-        return self.size;
+        self.size
     }
 
     fn get_dirs_up_to_100k(&self) -> Vec<&Dir> {
@@ -40,7 +40,7 @@ impl Dir {
                 .iter()
                 .for_each(|d| result.append(&mut d.get_dirs_up_to_100k()));
         }
-        return result;
+        result
     }
 
     fn collect(&self) -> Vec<&Dir> {
@@ -52,17 +52,17 @@ impl Dir {
                 .for_each(|d| result.append(&mut d.collect()));
         }
 
-        return result;
+        result
     }
 
     fn get_by_path(&mut self, path: &str) -> &mut Dir {
-        let mut dir_names = path.split("/").collect::<Vec<&str>>();
+        let mut dir_names = path.split('/').collect::<Vec<&str>>();
         dir_names.remove(0);
         let first_path = dir_names.remove(0);
-        if path == "" || path == "/" {
+        if path.is_empty() || path == "/" {
             return self;
         }
-        if dir_names.len() == 0 {
+        if dir_names.is_empty() {
             return self
                 .dirs
                 .iter_mut()
@@ -87,26 +87,24 @@ pub fn input_generator(input: &str) -> Dir {
 
     for line in lines {
         if line.starts_with('$') {
-            let spl = line.split(" ").collect::<Vec<&str>>();
+            let spl = line.split(' ').collect::<Vec<&str>>();
             if spl.len() == 3 {
                 if spl.last().unwrap() == &".." {
-                    let mut spl_paths = current_path.split("/").collect::<Vec<&str>>();
+                    let mut spl_paths = current_path.split('/').collect::<Vec<&str>>();
                     spl_paths.pop();
                     current_path = spl_paths.join("/");
                     if current_path.is_empty() {
                         current_path = String::from("/");
                     }
+                } else if current_path.as_str() == "/" || current_path.is_empty() {
+                    current_path.push_str(spl.last().unwrap());
                 } else {
-                    if current_path.as_str() == "/" || current_path.is_empty() {
-                        current_path.push_str(spl.last().unwrap());
-                    } else {
-                        current_path.push_str(format!("/{}", spl.last().unwrap()).as_str());
-                    }
+                    current_path.push_str(format!("/{}", spl.last().unwrap()).as_str());
                 }
                 continue;
             }
         } else {
-            let spl = line.split(" ").collect::<Vec<&str>>();
+            let spl = line.split(' ').collect::<Vec<&str>>();
             if let Ok(size) = spl.first().unwrap().parse::<usize>() {
                 root.get_by_path(&current_path).files.push(File(size));
             } else {
@@ -115,7 +113,7 @@ pub fn input_generator(input: &str) -> Dir {
             }
         }
     }
-    return root;
+    root
 }
 
 #[aoc(day7, part1)]
@@ -137,7 +135,7 @@ pub fn part2(input: &Dir) -> usize {
             res = dir.size;
         }
     }
-    return res;
+    res
 }
 
 #[cfg(test)]
