@@ -2,7 +2,7 @@
 pub fn part1(input: &str) -> usize {
     input
         .split("\n\n")
-        .map(|elf| return elf.lines().flat_map(|num| str::parse::<usize>(num)).sum())
+        .map(|elf| return elf.lines().flat_map(str::parse::<usize>).sum())
         .max()
         .unwrap()
 }
@@ -11,7 +11,7 @@ pub fn part1(input: &str) -> usize {
 pub fn part2(input: &str) -> usize {
     let mut max = input
         .split("\n\n")
-        .map(|elf| return elf.lines().flat_map(|num| str::parse::<usize>(num)).sum())
+        .map(|elf| return elf.lines().flat_map(str::parse::<usize>).sum())
         .collect::<Vec<usize>>();
 
     max.sort_by(|a, b| b.cmp(a));
