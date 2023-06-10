@@ -51,44 +51,66 @@ pub fn part1(input: &Vec<Instruction>) -> isize {
     res
 }
 
+struct DrawingMachine {
+    row_len: i32,
+    pixel_position: i32,
+    x: i32,
+    crt: String,
+}
+
+impl DrawingMachine {
+    fn tick(&mut self) {
+        self.crt.push(self.get_pixel());
+        self.pixel_position += 1;
+        if self.pixel_position == self.row_len {
+            self.reset_pixel_pos();
+        }
+    }
+
+    fn addx(&mut self, i: i32) {
+        self.tick();
+        self.tick();
+        self.x += i;
+    }
+
+    fn sprite_is_visible(&self) -> bool {
+        self.pixel_position == self.x - 1
+            || self.pixel_position == self.x
+            || self.pixel_position == self.x + 1
+    }
+
+    fn get_pixel(&self) -> char {
+        if self.sprite_is_visible() {
+            '#'
+        } else {
+            '.'
+        }
+    }
+
+    fn reset_pixel_pos(&mut self) {
+        self.crt.push('\n');
+        self.pixel_position = 0;
+    }
+    fn run_instructions(&mut self, instructions: &Vec<Instruction>) {
+        for instr in instructions {
+            match instr {
+                Instruction::Addx(n) => self.addx(*n as i32),
+                Instruction::Noop => self.tick(),
+            }
+        }
+    }
+}
+
 #[aoc(day10, part2)]
 pub fn part2(input: &Vec<Instruction>) -> usize {
-    let mut input = input.clone();
-
-    let mut instructions = input.iter_mut();
-    let mut screen = vec!['.'; 6 * 40];
-    let mut sprite_pos: isize = 0;
-    let mut add: Option<isize> = None;
-    let mut wait = false;
-
-    for (i, pixel) in screen.iter_mut().enumerate() {
-        // println!("{}", (i / 40) as isize * 40);
-        if sprite_pos == i as isize - 1 || sprite_pos == i as isize || sprite_pos + 1 == i as isize
-        {
-            *pixel = '#';
-        }
-        if wait {
-            wait = false;
-            continue;
-        } else if let Some(n) = add {
-            sprite_pos += n;
-            add = None;
-            continue;
-        }
-        let instr = instructions.next().unwrap();
-        match instr {
-            Instruction::Addx(n) => {
-                add = Some(*n);
-                wait = true;
-            }
-            Instruction::Noop => continue,
-        }
-    }
-
-    for i in screen.chunks(40) {
-        println!("{}", i.iter().collect::<String>());
-    }
-
+    let mut machine = DrawingMachine {
+        row_len: 40,
+        pixel_position: 0,
+        x: 1,
+        crt: String::new(),
+    };
+    machine.run_instructions(input);
+    println!("{}", machine.crt);
     1
 }
 
@@ -397,6 +419,6 @@ noop
 noop";
         part2(&input_generator(input));
         // uncomment to see test output
-        panic!()
+        // panic!()
     }
 }
