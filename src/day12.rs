@@ -161,7 +161,8 @@ fn part1(input: &TileType) -> u32 {
         yep.bottom.is_some(),
         yep.left.is_some()
     );
-    input.as_ref().unwrap().borrow_mut().shortest_path()
+    // input.as_ref().unwrap().borrow_mut().shortest_path()
+    1
 }
 
 #[cfg(test)]
