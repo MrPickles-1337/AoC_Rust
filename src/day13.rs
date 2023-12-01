@@ -1,4 +1,4 @@
-use std::str::Chars;
+use std::{cmp::Ordering, str::Chars};
 
 #[derive(Debug)]
 enum Node {
@@ -7,10 +7,32 @@ enum Node {
 }
 
 impl Node {
-    pub fn compare(&self, other: &Node) -> i8 {
+    pub fn compare(&self, other: &Node) -> Ordering {
         match self {
-            Node::Value(i) => todo!(),
-            Node::List(l) => todo!(),
+            Node::Value(self_v) => match other {
+                Node::Value(other_v) => self_v.cmp(other_v),
+                Node::List(_) => Node::List(vec![Node::Value(self_v.to_owned())]).compare(other),
+            },
+            Node::List(self_l) => match other {
+                Node::Value(other_v) => {
+                    Node::List(vec![Node::Value(other_v.to_owned())]).compare(self)
+                }
+                Node::List(other_l) => match self_l.len().cmp(&other_l.len()) {
+                    Ordering::Less => Ordering::Less,
+                    Ordering::Greater => Ordering::Greater,
+                    Ordering::Equal => {
+                        for (i, j) in std::iter::zip(self_l, other_l) {
+                            return match i.compare(j) {
+                                Ordering::Less => Ordering::Less,
+                                Ordering::Equal => continue,
+                                Ordering::Greater => Ordering::Greater,
+                                _ => unreachable!(),
+                            };
+                        }
+                        Ordering::Equal
+                    }
+                },
+            },
         }
     }
 }
@@ -18,6 +40,9 @@ impl Node {
 fn parse_list(input: &mut Chars) -> Node {
     let mut result = Vec::new();
     while let Some(c) = input.next() {
+        if c == ',' {
+            continue;
+        }
         if c == '[' {
             let list = parse_list(input);
             result.push(list);
@@ -26,7 +51,7 @@ fn parse_list(input: &mut Chars) -> Node {
         if c == ']' {
             break;
         }
-        result.push(Node::Value(c as u8));
+        result.push(Node::Value(c.to_digit(10).unwrap() as u8));
     }
     Node::List(result)
 }
@@ -51,7 +76,13 @@ fn input_generator(input: &str) -> Vec<(Node, Node)> {
 
 #[aoc(day13, part1)]
 fn part1(input: &[(Node, Node)]) -> usize {
-    input.iter().filter(|n| n.0.compare(&n.1) > 0).count()
+    for (i, j) in input {
+        println!("{:?}", i.compare(j));
+    }
+    input
+        .iter()
+        .filter(|n| matches!(n.0.compare(&n.1), Ordering::Less))
+        .count()
 }
 
 #[cfg(test)]
