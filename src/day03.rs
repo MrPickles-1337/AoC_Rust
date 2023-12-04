@@ -28,6 +28,16 @@ pub fn input_generator(input: &str) -> (Vec<Part>, String) {
                     number = 0;
                 }
             }
+            if save && x + 1 == l.len() {
+                let len = number.to_string().len();
+                parts.push(Part {
+                    start: ((x - len) as u32, y as u32),
+                    lenght: len as u32,
+                    value: number,
+                });
+                save = false;
+                number = 0;
+            }
         }
     });
     (parts, input.to_string())
