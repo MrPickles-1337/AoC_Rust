@@ -111,6 +111,8 @@ pub fn part2(input: &[Vec<(Cube, Cube, Cube)>]) -> u32 {
 #[cfg(test)]
 mod tests {
 
+    use std::fs;
+
     use super::*;
 
     #[test]
@@ -131,5 +133,17 @@ Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red
 Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red
 Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green";
         assert_eq!(2286, part2(&input_generator(input)));
+    }
+
+    #[test]
+    fn part1_with_input_test() {
+        let input = fs::read_to_string("input/2023/day2.txt").unwrap();
+        assert_eq!(2101, part1(&input_generator(input.as_str())));
+    }
+
+    #[test]
+    fn part2_with_input_test() {
+        let input = fs::read_to_string("input/2023/day2.txt").unwrap();
+        assert_eq!(58269, part2(&input_generator(input.as_str())));
     }
 }
