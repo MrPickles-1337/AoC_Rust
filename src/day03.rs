@@ -31,7 +31,7 @@ pub fn input_generator(input: &str) -> (Vec<Part>, String) {
             if save && x + 1 == l.len() {
                 let len = number.to_string().len();
                 parts.push(Part {
-                    start: ((x - len) as u32, y as u32),
+                    start: ((x - len + 1) as u32, y as u32),
                     lenght: len as u32,
                     value: number,
                 });
@@ -69,7 +69,7 @@ pub fn part1(input: &(Vec<Part>, String)) -> u32 {
                 continue;
             }
         }
-        if part.start.0 + part.lenght <= map.first().unwrap().len() as u32 {
+        if part.start.0 + part.lenght < map.first().unwrap().len() as u32 {
             let x = part.start.0 + part.lenght;
             let y = part.start.1;
             let row = map
@@ -85,7 +85,7 @@ pub fn part1(input: &(Vec<Part>, String)) -> u32 {
         }
         let mut is_part = false;
         'a: for x in part.start.0 as i32 - 1..(part.start.0 + part.lenght) as i32 + 1 {
-            if x < 0 && x <= part.start.0 as i32 {
+            if x < 0 || x >= map.first().unwrap().len() as i32 {
                 continue;
             }
             let y = part.start.1 as i32 - 1;
