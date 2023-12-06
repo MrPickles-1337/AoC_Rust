@@ -54,6 +54,7 @@ pub fn part2(input: &str) -> u32 {
 #[cfg(test)]
 mod tests {
 
+    #[cfg(feature = "full_input")]
     use std::fs;
 
     use super::*;
@@ -79,12 +80,14 @@ zoneight234
         assert_eq!(281, part2(input));
     }
 
+    #[cfg(feature = "full_input")]
     #[test]
     fn part1_with_input_test() {
         let input = fs::read_to_string("input/2023/day1.txt").unwrap();
         assert_eq!(54644, part1(input.as_str()));
     }
 
+    #[cfg(feature = "full_input")]
     #[test]
     fn part2_with_input_test() {
         let input = fs::read_to_string("input/2023/day1.txt").unwrap();
