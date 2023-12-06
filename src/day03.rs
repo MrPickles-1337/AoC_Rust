@@ -221,6 +221,8 @@ pub fn part2(input: &(Vec<Part>, String)) -> u32 {
 
 #[cfg(test)]
 mod tests {
+    use std::fs;
+
     use super::*;
 
     #[test]
@@ -251,5 +253,17 @@ mod tests {
 ...$.*....
 .664.598..";
         assert_eq!(467835, part2(&input_generator(input)));
+    }
+
+    #[test]
+    fn part1_with_input_test() {
+        let input = fs::read_to_string("input/2023/day3.txt").unwrap();
+        assert_eq!(521515, part1(&input_generator(input.as_str())));
+    }
+
+    #[test]
+    fn part2_with_input_test() {
+        let input = fs::read_to_string("input/2023/day3.txt").unwrap();
+        assert_eq!(69527306, part2(&input_generator(input.as_str())));
     }
 }
