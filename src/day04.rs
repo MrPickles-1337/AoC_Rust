@@ -77,6 +77,7 @@ pub fn part2(input: &[(Vec<u32>, Vec<u32>)]) -> u32 {
 
 #[cfg(test)]
 mod tests {
+    #[cfg(feature = "full_input")]
     use std::fs;
 
     use super::*;
@@ -103,12 +104,14 @@ Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11";
         assert_eq!(30, part2(&input_generator(input)));
     }
 
+    #[cfg(feature = "full_input")]
     #[test]
     fn part1_with_input_test() {
         let input = fs::read_to_string("input/2023/day4.txt").unwrap();
         assert_eq!(17782, part1(&input_generator(input.as_str())));
     }
 
+    #[cfg(feature = "full_input")]
     #[test]
     fn part2_with_input_test() {
         let input = fs::read_to_string("input/2023/day4.txt").unwrap();
