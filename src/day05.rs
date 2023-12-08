@@ -81,7 +81,7 @@ pub fn part2(input: &(Vec<u64>, Vec<Map>)) -> u64 {
         .flat_map(|pair| {
             let start = *pair.first().unwrap();
             let len = *pair.last().unwrap();
-            (start..start + len).collect::<Vec<u64>>()
+            (start..start + len).into_par_iter()
         })
         .map(|mut seed| {
             for i in input.1.iter() {
