@@ -1,3 +1,5 @@
+use rayon::prelude::*;
+
 #[aoc_generator(day4)]
 pub fn input_generator(input: &str) -> Vec<(Vec<u32>, Vec<u32>)> {
     let input = input.replace("  ", " ");
@@ -69,7 +71,7 @@ fn calc_card(winning: &[u32], points: &[u32], cards: &[(Vec<u32>, Vec<u32>)]) ->
 #[aoc(day4, part2)]
 pub fn part2(input: &[(Vec<u32>, Vec<u32>)]) -> u32 {
     input
-        .iter()
+        .par_iter()
         .enumerate()
         .map(|(i, card)| calc_card(&card.0, &card.1, &input[i..]))
         .sum()
