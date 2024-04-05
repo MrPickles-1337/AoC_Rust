@@ -143,37 +143,37 @@ pub fn part1(input: &Vec<Vec<char>>) -> u32 {
     }
 }
 
-#[aoc(day10, part2)]
-pub fn part2(input: &Vec<Vec<char>>) -> u32 {
-    let start = get_s_pos(input);
-
-    let mut dir1;
-    let mut dir2;
-    let mut pipe1;
-    let mut pipe2;
-    let mut pos1;
-    let mut pos2;
-    let yep = [
-        (start.0, start.1 - 1, Direction::Right),
-        (start.0, start.1 + 1, Direction::Left),
-        (start.0 - 1, start.1, Direction::Down),
-        (start.0 + 1, start.1, Direction::Up),
-    ];
-    let yep: Vec<_> = yep
-        .iter()
-        .filter(|a| can_go(a.2, (a.0, a.1), input))
-        .collect();
-    let first = yep.first().unwrap();
-    let last = yep.last().unwrap();
-    dir1 = first.2;
-    dir2 = last.2;
-    pos1 = (first.0, first.1);
-    pos2 = (last.0, last.1);
-    pipe1 = *input.get(pos1.0).unwrap().get(pos1.1).unwrap();
-    pipe2 = *input.get(pos2.0).unwrap().get(pos2.1).unwrap();
-
-    todo!()
-}
+// #[aoc(day10, part2)]
+// pub fn part2(input: &Vec<Vec<char>>) -> u32 {
+//     let start = get_s_pos(input);
+//
+//     let mut dir1;
+//     let mut dir2;
+//     let mut pipe1;
+//     let mut pipe2;
+//     let mut pos1;
+//     let mut pos2;
+//     let yep = [
+//         (start.0, start.1 - 1, Direction::Right),
+//         (start.0, start.1 + 1, Direction::Left),
+//         (start.0 - 1, start.1, Direction::Down),
+//         (start.0 + 1, start.1, Direction::Up),
+//     ];
+//     let yep: Vec<_> = yep
+//         .iter()
+//         .filter(|a| can_go(a.2, (a.0, a.1), input))
+//         .collect();
+//     let first = yep.first().unwrap();
+//     let last = yep.last().unwrap();
+//     dir1 = first.2;
+//     dir2 = last.2;
+//     pos1 = (first.0, first.1);
+//     pos2 = (last.0, last.1);
+//     pipe1 = *input.get(pos1.0).unwrap().get(pos1.1).unwrap();
+//     pipe2 = *input.get(pos2.0).unwrap().get(pos2.1).unwrap();
+//
+//     0
+// }
 
 #[cfg(test)]
 mod tests {
