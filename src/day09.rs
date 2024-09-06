@@ -91,7 +91,7 @@ pub fn part2(input: &Vec<(char, i32)>) -> usize {
             }
 
             knots.windows(2).for_each(|chunk| {
-                let head = chunk.get(0).unwrap().borrow();
+                let head = chunk.first().unwrap().borrow();
                 let mut tail = chunk.get(1).unwrap().borrow_mut();
                 let (mut dx, mut dy) = (head.x - tail.x, head.y - tail.y);
                 while dx.abs() > 1 || dy.abs() > 1 {
