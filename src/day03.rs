@@ -18,17 +18,15 @@ pub fn input_generator(input: &str) -> (Vec<Part>, String) {
             if let Some(c) = c.to_digit(10) {
                 save = true;
                 number = number * 10 + c;
-            } else {
-                if save {
-                    let len = number.to_string().len();
-                    parts.push(Part {
-                        start: ((x - len) as u32, y as u32),
-                        lenght: len as u32,
-                        value: number,
-                    });
-                    save = false;
-                    number = 0;
-                }
+            } else if save {
+                let len = number.to_string().len();
+                parts.push(Part {
+                    start: ((x - len) as u32, y as u32),
+                    lenght: len as u32,
+                    value: number,
+                });
+                save = false;
+                number = 0;
             }
             if save && x + 1 == l.len() {
                 let len = number.to_string().len();
@@ -46,10 +44,10 @@ pub fn input_generator(input: &str) -> (Vec<Part>, String) {
 }
 
 fn check(c: &char) -> bool {
-    match c {
-        '.' | '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' => false,
-        _ => true,
-    }
+    matches!(
+        c,
+        '.' | '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
+    )
 }
 
 #[aoc(day3, part1)]
@@ -62,10 +60,10 @@ pub fn part1(input: &(Vec<Part>, String)) -> u32 {
             let x = part.start.0 - 1;
             let row = map
                 .get(y as usize)
-                .expect(format!("expected row at {y}").as_str());
+                .unwrap_or_else(|| panic!("{}", "expected row at {y}"));
             let c = row
                 .get(x as usize)
-                .expect(format!("expected char at {x}").as_str());
+                .unwrap_or_else(|| panic!("{}", "expected char at {x}"));
             if check(c) {
                 result += part.value;
                 continue;
@@ -76,10 +74,10 @@ pub fn part1(input: &(Vec<Part>, String)) -> u32 {
             let y = part.start.1;
             let row = map
                 .get(y as usize)
-                .expect(format!("expected row at {y}").as_str());
+                .unwrap_or_else(|| panic!("{}", "expected row at {y}"));
             let c = row
                 .get(x as usize)
-                .expect(format!("expected char at {x}").as_str());
+                .unwrap_or_else(|| panic!("{}", "expected char at {x}"));
             if check(c) {
                 result += part.value;
                 continue;
@@ -94,10 +92,10 @@ pub fn part1(input: &(Vec<Part>, String)) -> u32 {
             if y >= 0 {
                 let row = map
                     .get(y as usize)
-                    .expect(format!("expected row at {y}").as_str());
+                    .unwrap_or_else(|| panic!("{}", "expected row at {y}"));
                 let c = row
                     .get(x as usize)
-                    .expect(format!("expected char at {x}").as_str());
+                    .unwrap_or_else(|| panic!("{}", "expected char at {x}"));
                 if check(c) {
                     is_part = true;
                     break 'a;
@@ -107,10 +105,10 @@ pub fn part1(input: &(Vec<Part>, String)) -> u32 {
             if (y as usize) < map.len() {
                 let row = map
                     .get(y as usize)
-                    .expect(format!("expected row at {y}").as_str());
+                    .unwrap_or_else(|| panic!("{}", "expected row at {y}"));
                 let c = row
                     .get(x as usize)
-                    .expect(format!("expected char at {x}").as_str());
+                    .unwrap_or_else(|| panic!("{}", "expected char at {x}"));
                 if check(c) {
                     is_part = true;
                     break 'a;
@@ -125,10 +123,7 @@ pub fn part1(input: &(Vec<Part>, String)) -> u32 {
 }
 
 fn check_2(c: &char) -> bool {
-    match c {
-        '*' => true,
-        _ => false,
-    }
+    matches!(c, '*')
 }
 
 #[aoc(day3, part2)]
@@ -142,10 +137,10 @@ pub fn part2(input: &(Vec<Part>, String)) -> u32 {
             let x = part.start.0 - 1;
             let row = map
                 .get(y as usize)
-                .expect(format!("expected row at {y}").as_str());
+                .unwrap_or_else(|| panic!("{}", "expected row at {y}"));
             let c = row
                 .get(x as usize)
-                .expect(format!("expected char at {x}").as_str());
+                .unwrap_or_else(|| panic!("{}", "expected char at {x}"));
             if check_2(c) {
                 if let Some(a) = geared.get(&(x, y)) {
                     result += part.value * a;
@@ -160,10 +155,10 @@ pub fn part2(input: &(Vec<Part>, String)) -> u32 {
             let y = part.start.1;
             let row = map
                 .get(y as usize)
-                .expect(format!("expected row at {y}").as_str());
+                .unwrap_or_else(|| panic!("{}", "expected row at {y}"));
             let c = row
                 .get(x as usize)
-                .expect(format!("expected char at {x}").as_str());
+                .unwrap_or_else(|| panic!("{}", "expected char at {x}"));
             if check_2(c) {
                 if let Some(a) = geared.get(&(x, y)) {
                     result += part.value * a;
@@ -181,10 +176,10 @@ pub fn part2(input: &(Vec<Part>, String)) -> u32 {
             if y >= 0 {
                 let row = map
                     .get(y as usize)
-                    .expect(format!("expected row at {y}").as_str());
+                    .unwrap_or_else(|| panic!("{}", "expected row at {y}"));
                 let c = row
                     .get(x as usize)
-                    .expect(format!("expected char at {x}").as_str());
+                    .unwrap_or_else(|| panic!("{}", "expected char at {x}"));
                 if check_2(c) {
                     let x = x as u32;
                     let y = y as u32;
@@ -200,10 +195,10 @@ pub fn part2(input: &(Vec<Part>, String)) -> u32 {
             if (y as usize) < map.len() {
                 let row = map
                     .get(y as usize)
-                    .expect(format!("expected row at {y}").as_str());
+                    .unwrap_or_else(|| panic!("{}", "expected row at {y}"));
                 let c = row
                     .get(x as usize)
-                    .expect(format!("expected char at {x}").as_str());
+                    .unwrap_or_else(|| panic!("{}", "expected char at {x}"));
                 if check(c) {
                     let x = x as u32;
                     if let Some(a) = geared.get(&(x, y)) {
