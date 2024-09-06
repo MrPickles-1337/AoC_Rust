@@ -11,7 +11,7 @@ pub fn input_generator(input: &str) -> Vec<Vec<i64>> {
 }
 
 #[aoc(day9, part1)]
-pub fn part1(input: &Vec<Vec<i64>>) -> i64 {
+pub fn part1(input: &[Vec<i64>]) -> i64 {
     input
         .iter()
         .map(|history| {
@@ -36,7 +36,7 @@ pub fn part1(input: &Vec<Vec<i64>>) -> i64 {
 }
 
 #[aoc(day9, part2)]
-pub fn part2(input: &Vec<Vec<i64>>) -> i64 {
+pub fn part2(input: &[Vec<i64>]) -> i64 {
     input
         .iter()
         .map(|history| {

@@ -1,6 +1,6 @@
 use std::cmp::Ordering;
 
-#[derive(PartialEq, Eq, PartialOrd, Clone, Debug)]
+#[derive(PartialEq, Eq, Clone, Debug)]
 pub struct Hand {
     pub cards: Vec<Card>,
     pub bid: u32,
@@ -48,6 +48,12 @@ fn check_combination(cards: Vec<u32>) -> Combination {
         return Combination::OnePair;
     }
     Combination::HighCard
+}
+
+impl PartialOrd for Hand {
+    fn partial_cmp(&self, other: &Hand) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
 }
 
 impl Ord for Hand {
@@ -108,7 +114,7 @@ impl Ord for Hand {
                     if self_card == other_card {
                         continue;
                     }
-                    return other_card.cmp(&self_card);
+                    return other_card.cmp(self_card);
                 }
             }
         }
@@ -151,7 +157,7 @@ pub fn input_generator(input: &str) -> Vec<Hand> {
         .lines()
         .map(|l| {
             let mut spl = l.split(' ');
-            let cards: Vec<Card> = spl.next().unwrap().chars().map(|c| Card::from(c)).collect();
+            let cards: Vec<Card> = spl.next().unwrap().chars().map(Card::from).collect();
             let bid: u32 = spl.next().unwrap().parse().unwrap();
             Hand { cards, bid }
         })
