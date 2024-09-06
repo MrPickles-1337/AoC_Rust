@@ -18,7 +18,7 @@ pub fn input_generator(input: &str) -> Vec<(u64, u64)> {
 }
 
 #[aoc(day6, part1)]
-pub fn part1(input: &Vec<(u64, u64)>) -> u64 {
+pub fn part1(input: &[(u64, u64)]) -> u64 {
     input
         .iter()
         .map(|&(time, distance)| {
@@ -35,7 +35,7 @@ pub fn part1(input: &Vec<(u64, u64)>) -> u64 {
 }
 
 #[aoc(day6, part2)]
-pub fn part2(input: &Vec<(u64, u64)>) -> u64 {
+pub fn part2(input: &[(u64, u64)]) -> u64 {
     let mut time = 0;
     let mut distance = 0;
     for (t, d) in input.iter() {

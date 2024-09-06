@@ -15,7 +15,7 @@ fn move_next(
     position: &mut (usize, usize),
     direction: &mut Direction,
     pipe: &mut char,
-    map: &Vec<Vec<char>>,
+    map: &[Vec<char>],
 ) {
     let next = match direction {
         Direction::Left => match pipe {
@@ -63,26 +63,14 @@ fn move_next(
     }
 }
 
-fn can_go(direction: Direction, pos: (usize, usize), map: &Vec<Vec<char>>) -> bool {
+fn can_go(direction: Direction, pos: (usize, usize), map: &[Vec<char>]) -> bool {
     if let Some(l) = map.get(pos.0) {
         if let Some(c) = l.get(pos.1) {
             match direction {
-                Direction::Left => match c {
-                    '-' | 'J' | '7' => true,
-                    _ => false,
-                },
-                Direction::Right => match c {
-                    '-' | 'F' | 'L' => true,
-                    _ => false,
-                },
-                Direction::Up => match c {
-                    '|' | 'L' | 'J' => true,
-                    _ => false,
-                },
-                Direction::Down => match c {
-                    '|' | 'F' | '7' => true,
-                    _ => false,
-                },
+                Direction::Left => matches!(c, '-' | 'J' | '7'),
+                Direction::Right => matches!(c, '-' | 'F' | 'L'),
+                Direction::Up => matches!(c, '|' | 'L' | 'J'),
+                Direction::Down => matches!(c, '|' | 'F' | '7'),
             }
         } else {
             false
@@ -92,7 +80,7 @@ fn can_go(direction: Direction, pos: (usize, usize), map: &Vec<Vec<char>>) -> bo
     }
 }
 
-fn get_s_pos(input: &Vec<Vec<char>>) -> (usize, usize) {
+fn get_s_pos(input: &[Vec<char>]) -> (usize, usize) {
     for (i, l) in input.iter().enumerate() {
         for (j, c) in l.iter().enumerate() {
             if c == &'S' {
@@ -104,7 +92,7 @@ fn get_s_pos(input: &Vec<Vec<char>>) -> (usize, usize) {
 }
 
 #[aoc(day10, part1)]
-pub fn part1(input: &Vec<Vec<char>>) -> u32 {
+pub fn part1(input: &[Vec<char>]) -> u32 {
     let start = get_s_pos(input);
 
     let mut dir1;

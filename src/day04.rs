@@ -35,7 +35,7 @@ pub fn part1(input: &[(Vec<u32>, Vec<u32>)]) -> u32 {
         let mut first = true;
         let mut points = 0;
         for i in numbers {
-            if wining.contains(&i) {
+            if wining.contains(i) {
                 if first {
                     first = false;
                     points += 1;
@@ -58,13 +58,13 @@ fn calc_card(winning: &[u32], points: &[u32], cards: &[(Vec<u32>, Vec<u32>)]) ->
         }
     }
     if count == 0 {
-        return 1;
+        1
     } else {
         let mut result = 1;
         for (i, card) in cards[1..count + 1].iter().enumerate() {
             result += calc_card(&card.0, &card.1, &cards[i + 1..]);
         }
-        return result;
+        result
     }
 }
 

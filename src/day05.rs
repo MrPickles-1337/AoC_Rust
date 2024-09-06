@@ -41,7 +41,7 @@ pub fn inptu_generator(input: &str) -> (Vec<u64>, Vec<Map>) {
         .split(" ")
         .map(|a| a.parse::<u64>().unwrap())
         .collect();
-    while let Some(m) = split.next() {
+    for m in split {
         let mut map = Map::default();
         m.lines().skip(1).for_each(|l| {
             let mut split = l.split(" ");

@@ -24,9 +24,7 @@ pub fn input_generator(input: &str) -> (Vec<Direction>, HashMap<String, (String,
     connections_str.lines().for_each(|l| {
         let yep = l
             .replace("= ", "")
-            .replace('(', "")
-            .replace(')', "")
-            .replace(',', "");
+            .replace(['(', ')', ','], "");
         let mut split = yep.split(' ');
         connections.insert(
             split.next().unwrap().to_string(),
@@ -53,19 +51,19 @@ fn step<'a>(
         Direction::Right => {
             let next = &connections.get(pos).unwrap().1;
             if next == destination {
-                return (true, 1, pos);
+                (true, 1, pos)
             } else {
                 let (a, b, pos) = step(next, destination, &directions[1..], connections);
-                return (a, b + 1, pos);
+                (a, b + 1, pos)
             }
         }
         Direction::Left => {
             let next = &connections.get(pos).unwrap().0;
             if next == destination {
-                return (true, 1, pos);
+                (true, 1, pos)
             } else {
                 let (a, b, pos) = step(next, destination, &directions[1..], connections);
-                return (a, b + 1, pos);
+                (a, b + 1, pos)
             }
         }
     }
@@ -86,10 +84,10 @@ fn step_part2<'a>(
     };
 
     if next.ends_with('Z') {
-        return (true, 1, pos);
+        (true, 1, pos)
     } else {
         let (a, b, pos) = step_part2(next, &directions[1..], connections);
-        return (a, b + 1, pos);
+        (a, b + 1, pos)
     }
 }
 
