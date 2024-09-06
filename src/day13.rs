@@ -26,7 +26,6 @@ impl Node {
                                 Ordering::Less => Ordering::Less,
                                 Ordering::Equal => continue,
                                 Ordering::Greater => Ordering::Greater,
-                                _ => unreachable!(),
                             };
                         }
                         Ordering::Equal

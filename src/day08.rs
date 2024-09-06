@@ -55,7 +55,7 @@ fn visible_from_left(field: &[Vec<u32>], x: usize, y: usize, height: &u32) -> bo
 }
 
 #[aoc(day8, part1)]
-pub fn part1(input: &Vec<Vec<u32>>) -> usize {
+pub fn part1(input: &[Vec<u32>]) -> usize {
     let mut visible = input.len() * 2 + (input[0].len() - 2) * 2;
     for i in 1..input.len() - 1 {
         for (j, tree) in input[i][1..input[i].len() - 1].iter().enumerate() {
@@ -111,7 +111,7 @@ fn calculate_scenic_score(field: &[Vec<u32>], x: usize, y: usize) -> u32 {
 }
 
 #[aoc(day8, part2)]
-pub fn part2(input: &Vec<Vec<u32>>) -> usize {
+pub fn part2(input: &[Vec<u32>]) -> usize {
     let mut result = 0;
     for i in 1..input.len() - 1 {
         for j in 1..input[0].len() - 1 {
