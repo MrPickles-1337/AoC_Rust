@@ -54,7 +54,7 @@ pub fn input_generator(input: &str) -> Vec<Vec<Tile>> {
 }
 
 #[aoc(day11, part1)]
-fn part1(input: &Vec<Vec<Tile>>) -> u32 {
+fn part1(input: &[Vec<Tile>]) -> u32 {
     let mut sum = 0;
     let mut galaxies = Vec::new();
     for (i, row) in input.iter().enumerate() {
@@ -63,7 +63,7 @@ fn part1(input: &Vec<Vec<Tile>>) -> u32 {
                 continue;
             }
             println!("got galaxy");
-            if galaxies.len() == 0 {
+            if galaxies.is_empty() {
                 galaxies.push((i, j));
                 continue;
             }
