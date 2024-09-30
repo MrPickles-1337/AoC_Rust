@@ -1,149 +1,177 @@
-use std::collections::HashMap;
+use std::{
+    collections::HashMap,
+    fmt::{self, Debug, Display},
+    str::FromStr,
+};
+
+use anyhow::{bail, Result};
+use num_integer::Integer;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum Direction {
+    Left,
+    Right,
+}
 
 #[derive(Debug)]
-pub enum Direction {
-    Right,
-    Left,
+struct Instructions(Vec<Direction>);
+
+impl Instructions {
+    fn cycle(&self) -> impl Iterator<Item = Direction> + '_ {
+        self.0.iter().copied().cycle()
+    }
+}
+
+impl FromStr for Instructions {
+    type Err = anyhow::Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let directions = s
+            .chars()
+            .map(|c| match c {
+                'L' => Ok(Direction::Left),
+                'R' => Ok(Direction::Right),
+                _ => Err(anyhow::anyhow!("Invalid direction: {:?}", c)),
+            })
+            .collect::<Result<Vec<_>>>()?;
+
+        Ok(Self(directions))
+    }
+}
+
+/// A node in the desert map.
+#[derive(Copy, Clone, PartialEq, Eq, Hash)]
+struct Node(u8, u8, u8);
+
+impl Debug for Node {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        Display::fmt(self, f)
+    }
+}
+
+impl Display for Node {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}{}{}", self.0 as char, self.1 as char, self.2 as char)
+    }
+}
+
+impl Node {
+    /// The starting node (AAA).
+    const START: Node = Node(b'A', b'A', b'A');
+    /// The ending node (ZZZ).
+    const END: Node = Node(b'Z', b'Z', b'Z');
+
+    /// Check if this node is a ghost start node i.e., a node that ends in A.
+    const fn is_ghost_start(self) -> bool {
+        self.2 == b'A'
+    }
+
+    /// Check if this node is a ghost end node i.e., a node that ends in Z.
+    const fn is_ghost_end(self) -> bool {
+        self.2 == b'Z'
+    }
+}
+
+impl FromStr for Node {
+    type Err = anyhow::Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let [first, second, third] = s.as_bytes() else {
+            bail!("Expected 3 character long string: {:?}", s);
+        };
+
+        Ok(Self(*first, *second, *third))
+    }
+}
+
+#[derive(Debug)]
+pub struct DesertMap {
+    instructions: Instructions,
+    map: HashMap<Node, (Node, Node)>,
+}
+
+impl DesertMap {
+    fn steps_impl<F>(&self, start: Node, is_end: F) -> anyhow::Result<u64>
+    where
+        F: Fn(Node) -> bool,
+    {
+        let mut steps = 0;
+        let mut current = start;
+        let mut instructions = self.instructions.cycle();
+
+        while !is_end(current) {
+            let Some(direction) = instructions.next() else {
+                bail!("Unexpected end of instructions");
+            };
+            let Some((left, right)) = self.map.get(&current) else {
+                bail!("No entry found for {} in map", current);
+            };
+            current = match direction {
+                Direction::Left => *left,
+                Direction::Right => *right,
+            };
+            steps += 1;
+        }
+
+        Ok(steps)
+    }
+
+    fn steps(&self) -> Result<u64> {
+        self.steps_impl(Node::START, |node| node == Node::END)
+    }
+
+    fn ghost_steps(&self) -> Result<u64> {
+        self.map
+            .keys()
+            .copied()
+            .filter(|node| node.is_ghost_start())
+            .map(|start| self.steps_impl(start, Node::is_ghost_end))
+            .try_fold(1, |acc, steps| Ok(acc.lcm(&steps?)))
+    }
+}
+
+impl FromStr for DesertMap {
+    type Err = anyhow::Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let mut lines = s.lines();
+
+        let instructions = lines
+            .next()
+            .ok_or_else(|| anyhow::anyhow!("Expected instruction line"))?
+            .parse::<Instructions>()?;
+
+        let lines = lines.skip(1); // Skip the empty line
+
+        let mut map = HashMap::new();
+        for (idx, line) in lines.enumerate() {
+            if line.len() != 16 {
+                bail!("Instruction {} is not 15 characters long: {:?}", idx, line);
+            }
+
+            map.insert(
+                line[0..3].parse()?,
+                (line[7..10].parse()?, line[12..15].parse()?),
+            );
+        }
+
+        Ok(Self { instructions, map })
+    }
 }
 
 #[aoc_generator(day8)]
-pub fn input_generator(input: &str) -> (Vec<Direction>, HashMap<String, (String, String)>) {
-    let mut spl = input.split("\n\n");
-    let instructions = spl
-        .next()
-        .unwrap()
-        .chars()
-        .map(|c| match c {
-            'R' => Direction::Right,
-            'L' => Direction::Left,
-            _ => unreachable!(),
-        })
-        .collect();
-    let mut connections = HashMap::new();
-    let connections_str = spl.next().unwrap();
-    connections_str.lines().for_each(|l| {
-        let yep = l
-            .replace("= ", "")
-            .replace(['(', ')', ','], "");
-        let mut split = yep.split(' ');
-        connections.insert(
-            split.next().unwrap().to_string(),
-            (
-                split.next().unwrap().to_string(),
-                split.next().unwrap().to_string(),
-            ),
-        );
-    });
-    (instructions, connections)
-}
-
-fn step<'a>(
-    pos: &'a String,
-    destination: &String,
-    directions: &[Direction],
-    connections: &'a HashMap<String, (String, String)>,
-) -> (bool, u32, &'a String) {
-    if directions.is_empty() {
-        return (false, 0, pos);
-    }
-    let direction = directions.first().unwrap();
-    match direction {
-        Direction::Right => {
-            let next = &connections.get(pos).unwrap().1;
-            if next == destination {
-                (true, 1, pos)
-            } else {
-                let (a, b, pos) = step(next, destination, &directions[1..], connections);
-                (a, b + 1, pos)
-            }
-        }
-        Direction::Left => {
-            let next = &connections.get(pos).unwrap().0;
-            if next == destination {
-                (true, 1, pos)
-            } else {
-                let (a, b, pos) = step(next, destination, &directions[1..], connections);
-                (a, b + 1, pos)
-            }
-        }
-    }
-}
-
-fn step_part2<'a>(
-    pos: &'a String,
-    directions: &[Direction],
-    connections: &'a HashMap<String, (String, String)>,
-) -> (bool, u32, &'a String) {
-    if directions.is_empty() {
-        return (false, 0, pos);
-    }
-    let direction = directions.first().unwrap();
-    let next = match direction {
-        Direction::Right => &connections.get(pos).unwrap().1,
-        Direction::Left => &connections.get(pos).unwrap().0,
-    };
-
-    if next.ends_with('Z') {
-        (true, 1, pos)
-    } else {
-        let (a, b, pos) = step_part2(next, &directions[1..], connections);
-        (a, b + 1, pos)
-    }
+pub fn input_generator(input: &str) -> anyhow::Result<DesertMap> {
+    input.parse()
 }
 
 #[aoc(day8, part1)]
-pub fn part1(input: &(Vec<Direction>, HashMap<String, (String, String)>)) -> u32 {
-    let mut result = 0;
-    let mut pos = &String::from("AAA");
-    loop {
-        let (found, steps, last_pos) = step(pos, &"ZZZ".to_string(), &input.0, &input.1);
-        if found {
-            return result + steps;
-        } else {
-            result += steps;
-            pos = last_pos;
-        }
-    }
+pub fn part1(input: &DesertMap) -> u64 {
+    input.steps().unwrap()
 }
 
 #[aoc(day8, part2)]
-pub fn part2(input: &(Vec<Direction>, HashMap<String, (String, String)>)) -> u32 {
-    let mut yep: Vec<u32> = input
-        .1
-        .iter()
-        .filter(|node| node.0.ends_with('A'))
-        .map(|a| a.0)
-        .map(|node| {
-            let mut result = 0;
-            let mut pos = node;
-            loop {
-                let (found, steps, last_pos) = step_part2(pos, &input.0, &input.1);
-                if found {
-                    return result + steps;
-                } else {
-                    result += steps;
-                    pos = last_pos;
-                }
-            }
-        })
-        .collect();
-    yep.sort();
-    lcm(&yep)
-}
-
-fn lcm(nums: &[u32]) -> u32 {
-    let mut result = 1;
-    for &num in nums {
-        result = num * result / gcd(num, result);
-    }
-    result
-}
-
-fn gcd(a: u32, b: u32) -> u32 {
-    if b == 0 {
-        return a;
-    }
-    gcd(b, a % b)
+pub fn part2(input: &DesertMap) -> u64 {
+    input.ghost_steps().unwrap()
 }
 
 #[cfg(test)]
@@ -166,8 +194,8 @@ ZZZ = (ZZZ, ZZZ)";
 AAA = (BBB, BBB)
 BBB = (AAA, ZZZ)
 ZZZ = (ZZZ, ZZZ)";
-        assert_eq!(2, part1(&input_generator(input1)));
-        assert_eq!(6, part1(&input_generator(input2)));
+        assert_eq!(2, part1(&input_generator(input1).unwrap()));
+        assert_eq!(6, part1(&input_generator(input2).unwrap()));
     }
 
     #[test]
@@ -182,6 +210,6 @@ ZZZ = (ZZZ, ZZZ)";
 22C = (22Z, 22Z)
 22Z = (22B, 22B)
 XXX = (XXX, XXX)";
-        assert_eq!(6, part2(&input_generator(input)));
+        assert_eq!(6, part2(&input_generator(input).unwrap()));
     }
 }
