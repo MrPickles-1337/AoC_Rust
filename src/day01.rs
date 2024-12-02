@@ -19,17 +19,20 @@ pub fn input_generator(input: &str) -> (Vec<u32>, Vec<u32>) {
 
 #[aoc(day1, part1)]
 pub fn part1(input: &(Vec<u32>, Vec<u32>)) -> u32 {
-    let mut a=  input.0.clone();
-    let mut b=  input.1.clone();
+    let mut a = input.0.clone();
+    let mut b = input.1.clone();
     a.sort();
     b.sort();
-    a.iter().zip(b.iter()).map(|(a,b)|a.abs_diff(*b)).sum()
+    a.iter().zip(b.iter()).map(|(a, b)| a.abs_diff(*b)).sum()
 }
-
 
 #[aoc(day1, part2)]
 pub fn part2(input: &(Vec<u32>, Vec<u32>)) -> u32 {
-    input.0.iter().map(|i| input.1.iter().filter(|j|*j == i).count() as u32 * i).sum()
+    input
+        .0
+        .iter()
+        .map(|i| input.1.iter().filter(|j| *j == i).count() as u32 * i)
+        .sum()
 }
 
 #[cfg(test)]
@@ -57,5 +60,4 @@ mod tests {
 3   3";
         assert_eq!(31, part2(&input_generator(input)));
     }
-    
 }
