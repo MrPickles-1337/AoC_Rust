@@ -2,7 +2,6 @@
 pub fn input_generator(input: &str) -> (Vec<u32>, Vec<u32>) {
     input
         .lines()
-        .into_iter()
         .map(|l| l.split("   "))
         .map(|mut s| {
             (
