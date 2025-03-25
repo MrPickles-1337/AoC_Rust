@@ -4,6 +4,7 @@ use std::fmt::Display;
 pub struct Point {
     obstacle: bool,
     visited: bool,
+    visited_with_direction: Vec<Direction>,
 }
 
 impl Point {
@@ -11,11 +12,16 @@ impl Point {
         Self {
             obstacle,
             visited: false,
+            visited_with_direction: Vec::new(),
         }
     }
 
-    pub fn visit(&mut self) {
+    pub fn visit(&mut self, direction: Direction) {
+        self.visited_with_direction.push(direction);
         self.visited = true;
+    }
+    pub fn visited(&self, direction: &Direction) -> bool {
+        self.visited_with_direction.contains(direction)
     }
 }
 
@@ -50,9 +56,7 @@ impl Direction {
 #[derive(Debug, Clone)]
 pub struct Map {
     map: Vec<Vec<Point>>,
-    initial_position: (usize, usize),
     position: (usize, usize),
-    initial_direction: Direction,
     direction: Direction,
 }
 
@@ -87,9 +91,7 @@ impl Map {
     pub fn new(map: Vec<Vec<Point>>, position: (usize, usize), direction: Direction) -> Self {
         Self {
             map,
-            initial_position: position,
             position,
-            initial_direction: direction,
             direction,
         }
     }
@@ -119,7 +121,6 @@ impl Map {
     }
 
     pub fn step(&mut self) -> StepResult {
-        // println!("{}", self);
         let next: (isize, isize) = match self.direction {
             Direction::Up => (-1, 0),
             Direction::Right => (0, 1),
@@ -135,9 +136,9 @@ impl Map {
             || next.0 >= self.map.len() as isize
             || next.1 >= self.map[0].len() as isize
         {
-            println!("outside");
             return StepResult::Outside;
         }
+
         if self
             .map
             .get(next.0 as usize)
@@ -149,19 +150,25 @@ impl Map {
             self.direction = self.direction.turn();
         } else {
             self.position = (next.0 as usize, next.1 as usize);
+        }
+
+        if self
+            .map
+            .get(self.position.0)
+            .unwrap()
+            .get(self.position.1)
+            .unwrap()
+            .visited(&self.direction)
+        {
+            return StepResult::Loop;
+        } else {
             self.map
                 .get_mut(self.position.0)
                 .unwrap()
                 .get_mut(self.position.1)
                 .unwrap()
-                .visit();
+                .visit(self.direction);
         }
-
-        if self.position == self.initial_position && self.direction == self.initial_direction {
-            println!("loop");
-            return StepResult::Loop;
-        }
-        println!("ok");
         StepResult::Ok
     }
 }
@@ -217,9 +224,7 @@ pub fn part2(input: &Map) -> u32 {
                 .unwrap()
                 .obstacle = true;
 
-            let is_loop = input.is_loop();
-            println!("{is_loop}");
-            is_loop
+            input.is_loop()
         })
         .count() as u32
 }
