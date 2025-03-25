@@ -2,7 +2,7 @@
 pub fn solve_part1(input: &str) -> u32 {
     input
         .chars()
-        .map(|c| if c == '(' { 1 as i8 } else { -1 as i8 })
+        .map(|c| if c == '(' { 1_i8 } else { -1_i8 })
         .sum::<i8>() as u32
 }
 

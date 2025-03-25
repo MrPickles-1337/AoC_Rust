@@ -25,9 +25,9 @@ pub fn data_generator(input: &str) -> Vec<Command> {
                 let end = get_coordinates(splitted.last().unwrap());
 
                 if on == "on" {
-                    return Command::TurnOn(start, end);
+                    Command::TurnOn(start, end)
                 } else {
-                    return Command::TurnOff(start, end);
+                    Command::TurnOff(start, end)
                 }
             } else {
                 let start = get_coordinates(splitted.next().unwrap());

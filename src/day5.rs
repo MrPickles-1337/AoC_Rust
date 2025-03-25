@@ -1,10 +1,7 @@
 fn three_vowels(string: &str) -> bool {
     string
         .chars()
-        .filter(|&c| match c {
-            'a' | 'e' | 'i' | 'o' | 'u' => true,
-            _ => false,
-        })
+        .filter(|&c| matches!(c, 'a' | 'e' | 'i' | 'o' | 'u'))
         .count()
         >= 3
 }
@@ -20,10 +17,7 @@ fn no_forbidden_strings(string: &str) -> bool {
     string
         .chars()
         .zip(string.chars().skip(1))
-        .all(|ab| match ab {
-            ('a', 'b') | ('c', 'd') | ('p', 'q') | ('x', 'y') => false,
-            _ => true,
-        })
+        .all(|ab| !matches!(ab, ('a', 'b') | ('c', 'd') | ('p', 'q') | ('x', 'y')))
 }
 
 fn is_nice(string: &str) -> bool {
