@@ -64,19 +64,14 @@ fn concat(a: usize, b: usize) -> usize {
     a * 10_usize.pow(b.ilog10() + 1) + b
 }
 
-fn calc_next_p2(value: usize, expected: usize, mut values: VecDeque<usize>) -> usize {
-    println!("{values:?}");
+fn calc_next_p2(value: usize, expected: usize, mut values: VecDeque<usize>) -> bool {
     if let Some(next) = values.pop_front() {
-        let with_plus = calc_next(value + next, expected, values.clone());
-        let with_multi = calc_next(value * next, expected, values.clone());
-        let with_concat = calc_next(concat(value, next), expected, values);
-        println!("{with_plus} {with_multi} {with_concat}");
-        [with_plus, with_multi, with_concat]
-            .iter()
-            .filter(|i| **i)
-            .count()
+        let with_plus = calc_next_p2(value + next, expected, values.clone());
+        let with_multi = calc_next_p2(value * next, expected, values.clone());
+        let with_concat = calc_next_p2(concat(value, next), expected, values);
+        with_plus || with_multi || with_concat
     } else {
-        unreachable!();
+        value == expected
     }
 }
 
@@ -89,8 +84,8 @@ pub fn part2(input: &[(usize, Vec<usize>)]) -> usize {
             let mut values = VecDeque::from(i.1.clone());
 
             let res = calc_next_p2(values.pop_front().unwrap(), test, values);
-            if res > 0 {
-                test * res
+            if res {
+                test
             } else {
                 0
             }
