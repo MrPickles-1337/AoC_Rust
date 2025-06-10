@@ -55,7 +55,6 @@ pub fn part2(input: &[Vec<i8>]) -> u32 {
 }
 
 #[cfg(test)]
-
 mod tests {
     use super::*;
 
