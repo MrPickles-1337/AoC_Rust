@@ -6,6 +6,17 @@ pub enum Input {
     Value(u16),
 }
 
+impl Input {
+    pub fn to_value(&self, board: &Board) -> u16 {
+        println!("{self:?}");
+        println!("{:?}", board.wires);
+        match self {
+            Self::Value(v) => *v,
+            Self::Wire(wire) => *board.wires.get(wire).unwrap(),
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub enum Gate {
     PASS {
@@ -51,6 +62,16 @@ impl Board {
     pub fn add_wire(&mut self, wire: String, value: u16) {
         self.wires.insert(wire, value);
     }
+
+    pub fn get_wire(&mut self, wire: String) -> u16 {
+        if let Some(value) = self.wires.get(&wire) {
+            return *value;
+        }
+
+        self.gates.iter().find(|w| w.)
+
+        todo!()
+    }
 }
 
 #[aoc_generator(day7)]
@@ -60,13 +81,15 @@ pub fn input_generator(input: &str) -> Board {
         let split = line.split(" ").collect::<Vec<_>>();
         let len = split.len();
         if len == 3 {
-            let value: u16 = if let Ok(value) = split.first().unwrap().parse() {
-                value
+            if let Ok(value) = split.first().unwrap().parse() {
+                let wire = split.last().unwrap().to_string();
+                board.add_wire(wire, value);
             } else {
-                todo!()
+                board.add_gate(Gate::PASS {
+                    input: Input::Wire(split.first().unwrap().to_string()),
+                    output: split.last().unwrap().to_string(),
+                });
             };
-            let wire = split.last().unwrap().to_string();
-            board.add_wire(wire, value);
         } else if len == 4 {
             let input = split.get(1).unwrap().to_string();
             let output = split.last().unwrap().to_string();
@@ -118,11 +141,66 @@ pub fn input_generator(input: &str) -> Board {
             board.add_gate(gate);
         }
     }
-    todo!()
+    board
 }
 
 #[aoc(day7, part1)]
 pub fn part1(input: &Board) -> u16 {
-    println!("{input:?}");
-    todo!()
+    let mut board = input.clone();
+    for gate in input.gates.iter() {
+        match gate {
+            Gate::PASS { input, output } => match input {
+                Input::Wire(wire) => {
+                    let value = board.wires.get(wire).unwrap();
+                    board.wires.insert(output.clone(), *value);
+                }
+                Input::Value(value) => {
+                    board.wires.insert(output.clone(), *value);
+                }
+            },
+            Gate::OR {
+                input1,
+                input2,
+                output,
+            } => {
+                let input1 = input1.to_value(&board);
+                let input2 = input2.to_value(&board);
+                board.wires.insert(output.to_owned(), input1 | input2);
+            }
+            Gate::AND {
+                input1,
+                input2,
+                output,
+            } => {
+                let input1 = input1.to_value(&board);
+                let input2 = input2.to_value(&board);
+                board.wires.insert(output.to_owned(), input1 & input2);
+            }
+
+            Gate::LSHIFT {
+                input1,
+                input2,
+                output,
+            } => {
+                let input1 = input1.to_value(&board);
+                let input2 = input2.to_value(&board);
+                board.wires.insert(output.to_owned(), input1 << input2);
+            }
+            Gate::RSHIFT {
+                input1,
+                input2,
+                output,
+            } => {
+                let input1 = input1.to_value(&board);
+                let input2 = input2.to_value(&board);
+                board.wires.insert(output.to_owned(), input1 >> input2);
+            }
+            Gate::NOT { input, output } => {
+                let input = input.to_value(&board);
+                board.wires.insert(output.to_owned(), !input);
+            }
+        };
+    }
+
+    *input.wires.get(&String::from("a")).unwrap()
 }
