@@ -2,6 +2,8 @@ IntelliJ IDEA
 debug/
 target/
 
+input/
+
 **/*.rs.bk
 
 *.pdb
