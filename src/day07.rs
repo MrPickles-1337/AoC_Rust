@@ -7,12 +7,10 @@ pub enum Input {
 }
 
 impl Input {
-    pub fn to_value(&self, board: &Board) -> u16 {
-        println!("{self:?}");
-        println!("{:?}", board.wires);
+    pub fn evaluate(&self, gates: &[Gate], wires: &mut HashMap<String, u16>) -> u16 {
         match self {
-            Self::Value(v) => *v,
-            Self::Wire(wire) => *board.wires.get(wire).unwrap(),
+            Input::Value(value) => *value,
+            Input::Wire(wire) => evaluate_wire(wire, gates, wires),
         }
     }
 }
@@ -49,10 +47,75 @@ pub enum Gate {
     },
 }
 
+impl Gate {
+    #[allow(unused_variables)]
+    pub fn output(&self) -> &String {
+        match self {
+            Gate::PASS { input, output } => output,
+            Gate::OR {
+                input1,
+                input2,
+                output,
+            } => output,
+            Gate::AND {
+                input1,
+                input2,
+                output,
+            } => output,
+            Gate::LSHIFT {
+                input1,
+                input2,
+                output,
+            } => output,
+            Gate::RSHIFT {
+                input1,
+                input2,
+                output,
+            } => output,
+            Gate::NOT { input, output } => output,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Default)]
 pub struct Board {
     wires: HashMap<String, u16>,
     gates: Vec<Gate>,
+}
+
+fn evaluate_wire(wire: &String, gates: &[Gate], wires: &mut HashMap<String, u16>) -> u16 {
+    if let Some(value) = wires.get(wire) {
+        return *value;
+    }
+
+    let gate = gates.iter().find(|g| g.output() == wire).unwrap();
+    #[allow(unused_variables)]
+    let value = match gate {
+        Gate::PASS { input, output } => input.evaluate(gates, wires),
+        Gate::OR {
+            input1,
+            input2,
+            output,
+        } => input1.evaluate(gates, wires) | input2.evaluate(gates, wires),
+        Gate::AND {
+            input1,
+            input2,
+            output,
+        } => input1.evaluate(gates, wires) & input2.evaluate(gates, wires),
+        Gate::LSHIFT {
+            input1,
+            input2,
+            output,
+        } => input1.evaluate(gates, wires) << input2.evaluate(gates, wires),
+        Gate::RSHIFT {
+            input1,
+            input2,
+            output,
+        } => input1.evaluate(gates, wires) >> input2.evaluate(gates, wires),
+        Gate::NOT { input, output } => !input.evaluate(gates, wires),
+    };
+    wires.insert(gate.output().clone(), value);
+    value
 }
 
 impl Board {
@@ -61,16 +124,6 @@ impl Board {
     }
     pub fn add_wire(&mut self, wire: String, value: u16) {
         self.wires.insert(wire, value);
-    }
-
-    pub fn get_wire(&mut self, wire: String) -> u16 {
-        if let Some(value) = self.wires.get(&wire) {
-            return *value;
-        }
-
-        self.gates.iter().find(|w| w.)
-
-        todo!()
     }
 }
 
@@ -147,60 +200,18 @@ pub fn input_generator(input: &str) -> Board {
 #[aoc(day7, part1)]
 pub fn part1(input: &Board) -> u16 {
     let mut board = input.clone();
-    for gate in input.gates.iter() {
-        match gate {
-            Gate::PASS { input, output } => match input {
-                Input::Wire(wire) => {
-                    let value = board.wires.get(wire).unwrap();
-                    board.wires.insert(output.clone(), *value);
-                }
-                Input::Value(value) => {
-                    board.wires.insert(output.clone(), *value);
-                }
-            },
-            Gate::OR {
-                input1,
-                input2,
-                output,
-            } => {
-                let input1 = input1.to_value(&board);
-                let input2 = input2.to_value(&board);
-                board.wires.insert(output.to_owned(), input1 | input2);
-            }
-            Gate::AND {
-                input1,
-                input2,
-                output,
-            } => {
-                let input1 = input1.to_value(&board);
-                let input2 = input2.to_value(&board);
-                board.wires.insert(output.to_owned(), input1 & input2);
-            }
+    evaluate_wire(&String::from("a"), &board.gates, &mut board.wires)
+}
 
-            Gate::LSHIFT {
-                input1,
-                input2,
-                output,
-            } => {
-                let input1 = input1.to_value(&board);
-                let input2 = input2.to_value(&board);
-                board.wires.insert(output.to_owned(), input1 << input2);
-            }
-            Gate::RSHIFT {
-                input1,
-                input2,
-                output,
-            } => {
-                let input1 = input1.to_value(&board);
-                let input2 = input2.to_value(&board);
-                board.wires.insert(output.to_owned(), input1 >> input2);
-            }
-            Gate::NOT { input, output } => {
-                let input = input.to_value(&board);
-                board.wires.insert(output.to_owned(), !input);
-            }
-        };
-    }
-
-    *input.wires.get(&String::from("a")).unwrap()
+#[aoc(day7, part2)]
+pub fn part2(input: &Board) -> u16 {
+    let mut board = input.clone();
+    let mut board_clone = input.clone();
+    let a = evaluate_wire(&String::from("a"), &board.gates, &mut board.wires);
+    board_clone.add_wire(String::from("b"), a);
+    evaluate_wire(
+        &String::from("a"),
+        &board_clone.gates,
+        &mut board_clone.wires,
+    )
 }
