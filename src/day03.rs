@@ -34,11 +34,26 @@ pub fn part1(input: &[Vec<u8>]) -> u32 {
 
 #[aoc(day3, part2)]
 pub fn part2(input: &[Vec<u8>]) -> usize {
-    // input.iter().map(|bank| {
-    //     let mut a = *bank.first().unwrap();
-    //     // let mut n =
-    // })
-    1
+    input
+        .iter()
+        .map(|bank| {
+            let mut stack = Vec::with_capacity(12);
+            let mut to_remove = bank.len() - 12;
+            for &digit in bank {
+                while let Some(&top) = stack.last() {
+                    if top < digit && to_remove > 0 {
+                        stack.pop();
+                        to_remove -= 1;
+                    } else {
+                        break;
+                    }
+                }
+                stack.push(digit);
+            }
+            stack.truncate(12);
+            stack.iter().fold(0, |i, b| i * 10 + *b as usize)
+        })
+        .sum()
 }
 
 #[cfg(test)]
